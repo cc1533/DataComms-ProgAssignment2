@@ -6,10 +6,11 @@
 *	1) DONE -- Get basic UDP connection to server set up.
 *	2) DONE -- Get basic file transfer working.
 *	3) Figure out Go-Back-N protocol and get it working.
-*	4) Mostly Done once (5) is solved, this should be done too -- Get serialization and deserialization working.
-*	5) Mostly Done, gotta solve an error -- Send file by packets class.
+*	4) DONE -- Get serialization and deserialization working.
+*	5) DONE -- Send file by packets class.
 *	6) (A part of #3) Get the window working.
 *	7) Set up timer for last packet with no ack.
+* 	8) Implement client receiving acks.
 *
 ************************************************************************************************************************************************/
 
@@ -18,7 +19,7 @@ import java.net.*;
 import java.util.Scanner;
 
 public class client
-{
+{	// java client localhost 3000 3001 test.txt
 	public static void main(String args[]) throws IOException
 	{
 		InetAddress emulatorName = InetAddress.getByName(args[0]);
@@ -42,8 +43,8 @@ public class client
 
 
 		// Setting up variables to be used in the while loop.
-                String[] fileSubString = new String[7];
-		int payloadSize = 4;
+                String[] fileSubString = new String[8];
+		int payloadSize = 30;
                 int i = 0;
                 boolean endOfFile = false;    
 		
@@ -56,7 +57,7 @@ public class client
 			// create mock-up window
 			// for now this just does the first 8 packets of the file
 			int windowSize = 7;
-			for(int j = 0; j < windowSize; j++)
+			for(int j = 0; j <= windowSize; j++)
 			{
 				fileSubString[j] = fileString.substring(i, i+payloadSize);
 				i += payloadSize;
@@ -64,7 +65,7 @@ public class client
 
 			// Sends all the packets to the server one after another.
 			int sent = 0;
-			for(int j = 0; j < windowSize; j++)
+			for(int j = 0; j <= windowSize; j++)
 			{
 				packet payLoad = new packet(1,j,payloadSize,fileSubString[j]);
 				// Serialize packet
