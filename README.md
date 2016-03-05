@@ -2,7 +2,7 @@ TODO:
 ========
 1. DONE -- Fix the "EOFException" error in server.java, this should make the packets get to the server correctly.  
 2. Implement window size correctly in client.java, currently just a static window for testing but it needs to be a dynamically changing window.  
-3. Make server.java send acks and its other requirements by checking the packet type for new packets.  
+3. DONE -- Make server.java send acks and its other requirements by checking the packet type for new packets.  
   * I'm thinking this can be done easily enough with some if-else statements that check the packet.getType().  
 4. Add ack support for client.java so it knows what server.java received or didn't receive.  
   * Resending packets can be added later.
@@ -28,6 +28,9 @@ Changelog:
 3/5/2016  
   Chris:  
 1. Solved the "EOFException" error in server.java, everything is now received by the server perfectly.  
+2. Server.java now uses packet.getType() and packet.getSeqNum() to tell what type of packet it is receiving and whether or not that packet is the sequence number of the packet it is expecting.  
+3. Server.java sends nacks and acks depending on whether or not it received the packet it was expecting.  
+4. Client.java does not currently support handling acks or nacks, add this later.  
 Goals:
   1. DONE -- Hopefully fix (1) on the TODO list.  
   2. Work on (2) of the TODO list.  
