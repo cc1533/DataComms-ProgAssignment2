@@ -7,7 +7,7 @@ TODO:
 4. Add ack support for client.java so it knows what server.java received or didn't receive.  
   * Resending packets can be added later.
 5. Add a global timer to client.java that keeps track of the last unacked packet sent to server.java.  
-6. Add a way for server.java to tell if it got a packet out of sequence order and drop it if it was wrong.  
+6. DONE -- Add a way for server.java to tell if it got a packet out of sequence order and drop it if it was wrong.  
 7. Implement go-back-n protocol (oh boy...).  
 8. Make sure program correctly handles missing packets.  
 9. Hopefully the program is done by this point...  
