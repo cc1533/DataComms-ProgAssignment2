@@ -10,7 +10,6 @@
 *	5) DONE -- Send file by packets class.
 *	6) (A part of #3) Get the window working.
 *	7) Set up timer for last packet with no ack.
-* 	8) Implement client receiving acks.
 *
 ************************************************************************************************************************************************/
 

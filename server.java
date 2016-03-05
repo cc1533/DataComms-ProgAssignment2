@@ -44,11 +44,11 @@ public class server
 				{
 					//System.out.println("Received Data Packet.");
 					// % 8 means the client doens't have to reset the seq #s every time.
-					if(exSeqNum != (packet.getSeqNum() % 8))
+					if((exSeqNum % 8) != (packet.getSeqNum() % 8))
 					{
 						// drop the packet and send the previous seqNum as an ack
 						System.out.println("Packet did not contain the expected sequence #.");
-						packet nack = new packet(2,exSeqNum - 1, 0, null);
+						packet nack = new packet(2,((exSeqNum - 1) % 8), 0, null);
 						// copied from client.java
 						ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
 						ObjectOutputStream ooStream = new ObjectOutputStream(baoStream);
@@ -69,7 +69,7 @@ public class server
 						received = new String(packet.getData());
 						packet.printContents();
 						// send ack
-						packet ack = new packet(0,packet.getSeqNum(),0,null);
+						packet ack = new packet(0,(packet.getSeqNum() % 8),0,null);
 						ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
 						ObjectOutputStream ooStream = new ObjectOutputStream(baoStream);
 						ooStream.writeObject(ack);
