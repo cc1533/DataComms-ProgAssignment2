@@ -12,7 +12,9 @@ TODO:
 8. Make sure program correctly handles missing packets.  
 9. Hopefully the program is done by this point...  
 
-To edit this file with the correct style:  https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
+To edit this file with the correct style:  https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet  
+Need help learning Java code? try to find what you specifically need help with here: https://www.youtube.com/playlist?list=PL17E300C92CE0261A  
+I'm currently coding with gedit on Ubuntu 15.10.  If you're on Windows, I suggest the IntelliJ Java IDE but you'll have to manually set the arguments when your program runs.  
 
 Changelog:
 =========
