@@ -1,6 +1,6 @@
 TODO:
 ========
-1. Fix the "EOFException" error in server.java, this should make the packets get to the server correctly.  
+1. DONE -- Fix the "EOFException" error in server.java, this should make the packets get to the server correctly.  
 2. Implement window size correctly in client.java, currently just a static window for testing but it needs to be a dynamically changing window.  
 3. Make server.java send acks and its other requirements by checking the packet type for new packets.  
   * I'm thinking this can be done easily enough with some if-else statements that check the packet.getType().  
@@ -26,9 +26,10 @@ Changelog:
 5. Tested client.java to make sure it was sending data correctly using 4 bytes, everything looked good from tests.  
 
 3/5/2016  
-Chris:  
+  Chris:  
+1. Solved the "EOFException" error in server.java, everything is now received by the server perfectly.  
 Goals:
-  1. Hopefully fix (1) on the TODO list.  
+  1. DONE -- Hopefully fix (1) on the TODO list.  
   2. Work on (2) of the TODO list.  
 
 3/6/2016  
