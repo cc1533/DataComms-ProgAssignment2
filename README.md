@@ -60,6 +60,8 @@ Chris:
 
 3/11/2016  
 Chris:  
+Goals:
+  * Hopefully done. I'm going to Florida for Spring Break from Sat. - Mon. so I won't be able to work any.  
 
 3/12/2016  
 Chris:  
@@ -69,3 +71,5 @@ Chris:
 
 3/14/2016  
 Chris:  
+Goals:
+  * Fix any remaining issues and turn in.  
