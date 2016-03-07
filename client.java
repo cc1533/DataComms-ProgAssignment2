@@ -8,7 +8,7 @@
 *	3) Figure out Go-Back-N protocol and get it working.
 *	4) DONE -- Get serialization and deserialization working.
 *	5) DONE -- Send file by packets class.
-*	6) (A part of #3) Get the window working.
+*	6) DONE -- Get the window working.
 *	7) Set up timer for last packet with no ack.
 *
 ************************************************************************************************************************************************/
@@ -50,23 +50,42 @@ public class client
 		// Change this to work for final ack instead of endOfFile.
 		while(!endOfFile)
 		{
-			i = 0;
 			boolean ack = false;
 			
-			// create mock-up window
-			// for now this just does the first 8 packets of the file
+			// This for-loop splits the fileString into segments of the given payloadSize.  As long as i is less than the length of
+			// 	the fileString - the payloadSize, it is not the final packet of the transmission.
+			// Else, it is the final packet and sets the endOfFile variable accordingly.
 			int windowSize = 7;
 			for(int j = 0; j <= windowSize; j++)
 			{
-				fileSubString[j] = fileString.substring(i, i+payloadSize);
-				i += payloadSize;
+				// for all packets before the end of the file.
+				if(i < (fileString.length() - payloadSize))
+				{
+					fileSubString[j] = fileString.substring(i, i+payloadSize);
+					i += payloadSize;
+				}
+				// For the final packet to the end of the file.
+				else if(i >= (fileString.length() - payloadSize))
+				{
+					fileSubString[j] = fileString.substring(i, fileString.length());
+					endOfFile = true;
+				}
+				// if the current packet is the end of file packet, all packets after this one don't contain any information.
+				if(endOfFile)
+				{
+					System.out.println("End of File found.");
+					for(int k = j + 1; k <= windowSize; k++)
+					{
+						fileSubString[k] = "";
+						j++;
+					}
+				}
 			}
 
 			// Sends all the packets to the server one after another.
-			int sent = 0;
 			for(int j = 0; j <= windowSize; j++)
 			{
-				packet payLoad = new packet(1,j,payloadSize,fileSubString[j]);
+				packet payLoad = new packet(1,j,fileSubString[j].length(),fileSubString[j]);
 				// Serialize packet
 				ByteArrayOutputStream baStream = new ByteArrayOutputStream();
 				ObjectOutputStream ooStream = new ObjectOutputStream(baStream);
@@ -78,8 +97,6 @@ public class client
 				DatagramPacket packet = new DatagramPacket(sendData, sendData.length, emulatorName, sendToEmulator);
 				clientSocketU.send(packet);
 				// global timer should start here with a loop looking for the ack after the for loop
-				// eof = true just for testing, should be taken out.
-				endOfFile = true;
 			}
 
 			// Clean out the crap from recData.
@@ -99,6 +116,8 @@ public class client
 				byte[] eofSig = eofStream.toByteArray();
 				DatagramPacket sendEOF = new DatagramPacket(eofSig, eofSig.length, emulatorName, sendToEmulator);
 				clientSocketU.send(sendEOF);
+				// Start timer and look for ack of EOT packet from server
+
 			}
 		}//end while
 		// Done with UDP connection, close the socket.
