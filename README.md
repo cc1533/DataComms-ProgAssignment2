@@ -45,7 +45,7 @@ Unfortunately, I was unable to work on anything today. Church, family, etc. I'll
 3/7/2016  
 Chris:  
 Goals:
-  1. Work on Sliding Window (2).  
+  1. Work on Sliding Window (2). Maybe implement the client ack system (4) here?  May be necessary...  
   2. Begin thinking through how the GBN protocol will be implemented (7).  
   3. Completing these 2 will get the program down to just the timer for the GBN protocol left to be implemented and some intense testing to make sure that everything works as it's supposed to.  
 
