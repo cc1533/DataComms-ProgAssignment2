@@ -1,7 +1,7 @@
 TODO:
 ========
 1. DONE -- cc1533 -- Fix the "EOFException" error in server.java, this should make the packets get to the server correctly.  
-2. Implement window size correctly in client.java, currently just a static window for testing but it needs to be a dynamically changing window.  
+2. DONE -- cc1533 -- Implement window size correctly in client.java, currently just a static window for testing but it needs to be a dynamically changing window.  
 3. DONE -- cc1533 -- Make server.java send acks and its other requirements by checking the packet type for new packets.  
   * I'm thinking this can be done easily enough with some if-else statements that check the packet.getType().  
 4. Add ack support for client.java so it knows what server.java received or didn't receive.  
@@ -44,6 +44,8 @@ Unfortunately, I was unable to work on anything today. Church, family, etc. I'll
 
 3/7/2016  
 Chris:  
+1. Got the sliding window working, it now sends the whole file and terminates correctly when the EOT packet is received by the server. This doesn't currently use any acks as that is a part of the GBN protocol.
+2. Will begin working on GBN and Acks.  
 Goals:
   1. Work on Sliding Window (2). Maybe implement the client ack system (4) here?  May be necessary...  
   2. Begin thinking through how the GBN protocol will be implemented (7).  
