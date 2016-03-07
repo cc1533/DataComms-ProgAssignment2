@@ -73,7 +73,7 @@ public class client
 				// if the current packet is the end of file packet, all packets after this one don't contain any information.
 				if(endOfFile)
 				{
-					System.out.println("End of File found.");
+					//System.out.println("End of File found.");	// just for debugging.
 					for(int k = j + 1; k <= windowSize; k++)
 					{
 						fileSubString[k] = "";
