@@ -55,6 +55,8 @@ Goals:
 
 3/8/2016  
 Chris:  
+1. Fixed the thing I broke yesterday. client.java and server.java now send across the emulator successfully.  
+2. Working on getting GBN protocol working.  
 Goals:
   1. Fix server.java to receive packets correctly again.  
   2. Test client.java and server.java using the emulator to make sure the transfer works correctly.  
