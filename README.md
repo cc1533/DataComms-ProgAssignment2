@@ -10,7 +10,8 @@ TODO:
 6. DONE -- cc1533 -- Add a way for server.java to tell if it got a packet out of sequence order and drop it if it was wrong.  
 7. Implement go-back-n protocol (oh boy...).  
 8. Make sure program correctly handles missing packets.  
-9. Hopefully the program is done by this point...  
+9. Add all the required .log files to client.java and server.java, shouldn't be too difficult.  
+10. Hopefully the program is done by this point...  
 
 To edit this file with the correct style:  https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet  
 Need help learning Java code? try to find what you specifically need help with here: https://www.youtube.com/playlist?list=PL17E300C92CE0261A  
@@ -54,6 +55,11 @@ Goals:
 
 3/8/2016  
 Chris:  
+Goals:
+  1. Fix server.java to receive packets correctly again.  
+  2. Test client.java and server.java using the emulator to make sure the transfer works correctly.  
+  3. Fully implement the GBN protocol.  
+  4. Start thinking how the timer is going to work.  
 
 3/9/2016  
 Chris:  
