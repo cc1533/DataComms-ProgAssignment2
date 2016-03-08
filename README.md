@@ -44,8 +44,9 @@ Unfortunately, I was unable to work on anything today. Church, family, etc. I'll
 
 3/7/2016  
 Chris:  
-1. Got the sliding window working, it now sends the whole file and terminates correctly when the EOT packet is received by the server. This doesn't currently use any acks as that is a part of the GBN protocol.
+1. Got the sliding window working, it now sends the whole file and terminates correctly when the EOT packet is received by the server. This doesn't currently use any acks as that is a part of the GBN protocol.  
 2. Will begin working on GBN and Acks.  
+3. Tried testing .java files using the emulator program. Broke something. Now the server doesn't receive anything. I won't upload any code until this is resolved. I have begun the basic outline of how the GBN will work though.  
 Goals:
   1. Work on Sliding Window (2). Maybe implement the client ack system (4) here?  May be necessary...  
   2. Begin thinking through how the GBN protocol will be implemented (7).  
