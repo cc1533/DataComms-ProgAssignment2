@@ -10,6 +10,8 @@
 *	5) DONE -- Send file by packets class.
 *	6) DONE -- Get the window working.
 *	7) Set up timer for last packet with no ack.
+*	8) Set up seqNum logs and Ack logs for client.
+*	9) If there's time, clean everything up and try to use methods instead of having everything in main.
 *
 ************************************************************************************************************************************************/
 
@@ -36,8 +38,9 @@ public class client
 		}
 		scanFile.close();
 
-		// Create UDP connection with the received port # from the Server.
-		DatagramSocket clientSocketU = new DatagramSocket();
+		// Create UDP connections between client and emulator, they say "toServer" and "fromServer" for simplicity.
+		DatagramSocket toServer = new DatagramSocket();
+		DatagramSocket fromServer = new DatagramSocket(receiveFromEmulator);
 
 
 
@@ -45,12 +48,14 @@ public class client
                 String[] fileSubString = new String[8];
 		int payloadSize = 30;
                 int i = 0;
-                boolean endOfFile = false;    
+                boolean endOfFile = false;
+		int exAckNum = 0;
 		
 		// Change this to work for final ack instead of endOfFile.
 		while(!endOfFile)
 		{
-			boolean ack = false;
+			exAckNum = 0;	// reset exAckNum every new window.
+			//boolean ack = false;
 			
 			// This for-loop splits the fileString into segments of the given payloadSize.  As long as i is less than the length of
 			// 	the fileString - the payloadSize, it is not the final packet of the transmission.
@@ -73,7 +78,7 @@ public class client
 				// if the current packet is the end of file packet, all packets after this one don't contain any information.
 				if(endOfFile)
 				{
-					//System.out.println("End of File found.");	// just for debugging.
+					System.out.println("End of File found.");
 					for(int k = j + 1; k <= windowSize; k++)
 					{
 						fileSubString[k] = "";
@@ -95,32 +100,61 @@ public class client
 				System.out.println("Sending:  ");
 				payLoad.printContents();
 				DatagramPacket packet = new DatagramPacket(sendData, sendData.length, emulatorName, sendToEmulator);
-				clientSocketU.send(packet);
+				toServer.send(packet);
 				// global timer should start here with a loop looking for the ack after the for loop
 			}
 
-			// Clean out the crap from recData.
-			byte[] recData = new byte[1];
+			for(int j = 0; j <= windowSize; j++)
+			{
+				byte[] ackFromServer = new byte[1024];
+				DatagramPacket recAck = new DatagramPacket(ackFromServer, ackFromServer.length);
+				fromServer.receive(recAck);
+				byte[] ackD = recAck.getData();
+				ByteArrayInputStream bais = new ByteArrayInputStream(ackD);
+				ObjectInputStream ois = new ObjectInputStream(bais);
+				// obtained ack from server, test ack seqNums
+				try
+				{
+					packet ackP = (packet) ois.readObject();
+					ois.close();
+					if(exAckNum == ackP.getSeqNum())
+					{
+						//reset timer for next packet
+						exAckNum++;
+					}
+					else
+					{
+						System.out.println("Unexpected ack from server.");
+						// resets i to start at the beginning of the missing packet *I think*.
+						i = i - (payloadSize * (8 - ackP.getSeqNum()));
+						// breaks out of the for-loop
+						j = windowSize + 1;
+					}
+				} catch(ClassNotFoundException e)
+				{
+					e.printStackTrace();
+				}
+			}
 
 			
 			// If the endOfFile packet is sent, create and send the EOT packet
 			if(endOfFile)
 			{
 				// This will basically be its own mini sender and receiver that uses a while-loop to wait for ack.
-				String endOfFileS = "XEOF";
-				packet eofpayLoad = new packet(3,0,payloadSize,endOfFileS);
+				//String endOfFileS = "XEOF";
+				packet eofpayLoad = new packet(3,0,0,null);
 				ByteArrayOutputStream eofStream = new ByteArrayOutputStream();
 				ObjectOutputStream ooeofStream = new ObjectOutputStream(eofStream);
 				ooeofStream.writeObject(eofpayLoad);
 				ooeofStream.flush();
 				byte[] eofSig = eofStream.toByteArray();
 				DatagramPacket sendEOF = new DatagramPacket(eofSig, eofSig.length, emulatorName, sendToEmulator);
-				clientSocketU.send(sendEOF);
+				toServer.send(sendEOF);
 				// Start timer and look for ack of EOT packet from server
 
 			}
 		}//end while
-		// Done with UDP connection, close the socket.
-		clientSocketU.close();
+		toServer.close();	// Connections terminated.
+		fromServer.close();
 	}//end main
 }//end client

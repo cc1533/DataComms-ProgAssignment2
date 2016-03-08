@@ -16,7 +16,7 @@ public class server
 		
 		// Creating UDP connection with Emulator.
 		DatagramSocket fromClient = new DatagramSocket(receiveFromEmulator);
-		DatagramSocket toClient = new DatagramSocket(sendToEmulator);
+		DatagramSocket toClient = new DatagramSocket();
 		// Creating "received.txt" file.
 		Formatter file = new Formatter(fileName);
 		// using this byte array fixed the EOFException error I was getting.
@@ -31,8 +31,8 @@ public class server
 			fromClient.receive(recPack);
 			// Deserialize packet
 			byte[] data = recPack.getData();
-			ByteArrayInputStream baStream = new ByteArrayInputStream(data);
-			ObjectInputStream oiStream = new ObjectInputStream(baStream);
+			ByteArrayInputStream baiStream = new ByteArrayInputStream(data);
+			ObjectInputStream oiStream = new ObjectInputStream(baiStream);
 			// Initialize the string to jump over any errors.
 			String received = new String();
 			try
@@ -44,11 +44,11 @@ public class server
 				{
 					//System.out.println("Received Data Packet.");
 					// % 8 means the client doens't have to reset the seq #s every time.
-					if((exSeqNum % 8) != (packet.getSeqNum() % 8))
+					if((exSeqNum % 8) != packet.getSeqNum())
 					{
 						// drop the packet and send the previous seqNum as an ack
 						System.out.println("Packet did not contain the expected sequence #.");
-						packet nack = new packet(2,((exSeqNum - 1) % 8), 0, null);
+						packet nack = new packet(0,(packet.getSeqNum()), 0, null);
 						// copied from client.java
 						ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
 						ObjectOutputStream ooStream = new ObjectOutputStream(baoStream);
@@ -58,14 +58,15 @@ public class server
 						//System.out.println("Sending:  ");
 						//nack.printContents();
 						DatagramPacket sendNack = new DatagramPacket(outgoingData, outgoingData.length, emulatorName, sendToEmulator);
-						// as of right now, the client doesn't know what to do with any acks so that needs to be added
-						// along side the implementation of the timer.
 						toClient.send(sendNack);
+						// so that any remaining packets in the window from the client will be dropped too.
+						// the next packet seqNum from the client should be 0 because a new window started.
+						exSeqNum = 0;
 					}
 					// if it is the expected seq num, increment seqnum, send ack, add data to file
 					else
 					{
-						//System.out.println("Packet contained the expected sequence #.");
+						System.out.println("Packet contained the expected sequence #, sending ack.");
 						received = new String(packet.getData());
 						packet.printContents();
 						// send ack
@@ -100,15 +101,6 @@ public class server
 			{
 				e.printStackTrace();
 			}
-			
-
-			// Test for eof signal
-			/*if(received.contains("XEOF"))
-                        {
-				file.close();
-				servSock.close();
-				System.exit(0);
-			}*/
 		}
 	}//end main
 }//end server
