@@ -9,7 +9,7 @@ TODO:
 5. Add a global timer to client.java that keeps track of the last unacked packet sent to server.java.  
 6. DONE -- cc1533 -- Add a way for server.java to tell if it got a packet out of sequence order and drop it if it was wrong.  
 7. IN PROGRESS -- Implement go-back-n protocol (oh boy...).  
-8. IN PROGRESS -- Make sure program correctly handles missing packets.  
+8. DONE -- cc1533 -- Make sure program correctly handles missing packets.  
 9. Add all the required .log files to client.java and server.java, shouldn't be too difficult.  
 10. Hopefully the program is done by this point...  
 
@@ -66,6 +66,7 @@ Goals:
 
 3/9/2016  
 Chris:  
+1. Worked on GBN all day. The client now recognizes (based on acks) if the packet made it to the server or if an ack was dropped. However, there's some error in the way I'm handling missing packets. It's starting the new window at the wrong place and screwing up everything else. The program basically requires that the last window of a file drops no packets. The whole window must get to the server else the program will not shut down. This is required and makes perfect sense but also means that the last part of a file may be sent dozens of times and added to the file.  
 Goals:
   1. Get GBN fully working.  
   2. Figure out how to get the timers implemented.  
@@ -73,6 +74,10 @@ Goals:
 
 3/10/2016  
 Chris:  
+Goals:
+  1. Finish GBN.  
+  2. Timers?
+  3. Log files?
 
 3/11/2016  
 Chris:  
