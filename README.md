@@ -57,6 +57,7 @@ Goals:
 Chris:  
 1. Fixed the thing I broke yesterday. client.java and server.java now send across the emulator successfully.  
 2. Working on getting GBN protocol working. So far the GBN (mostly) works. About 60% of the file gets sent successfully with the drop probability of the emulator set to .2 (20%). I'm not entirely sure why the rest of the file is missing, I'll figure this out later. But I'll go ahead and upload the code anyway.  
+3. Unfortunately couldn't get back to working on the GBN protocol. I'll figure it out tomorrow.  
 Goals:
   1. Fix server.java to receive packets correctly again.  
   2. Test client.java and server.java using the emulator to make sure the transfer works correctly.  
@@ -65,6 +66,10 @@ Goals:
 
 3/9/2016  
 Chris:  
+Goals:
+  1. Get GBN fully working.  
+  2. Figure out how to get the timers implemented.  
+  3. Log files?  
 
 3/10/2016  
 Chris:  
