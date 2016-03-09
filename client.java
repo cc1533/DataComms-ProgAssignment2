@@ -5,7 +5,7 @@
 * TODO for whole project
 *	1) DONE -- Get basic UDP connection to server set up.
 *	2) DONE -- Get basic file transfer working.
-*	3) Figure out Go-Back-N protocol and get it working.
+*	3) IN PROGRESS -- Figure out Go-Back-N protocol and get it working.
 *	4) DONE -- Get serialization and deserialization working.
 *	5) DONE -- Send file by packets class.
 *	6) DONE -- Get the window working.
@@ -47,15 +47,17 @@ public class client
 		// Setting up variables to be used in the while loop.
                 String[] fileSubString = new String[8];
 		int payloadSize = 30;
-                int i = 0;
+                int i = 0;	// current location of the window in relation to the file.
                 boolean endOfFile = false;
 		int exAckNum = 0;
 		
 		// Change this to work for final ack instead of endOfFile.
 		while(!endOfFile)
 		{
+			int[] eachPackLen = new int[8];
 			exAckNum = 0;	// reset exAckNum every new window.
 			//boolean ack = false;
+			System.out.println("Starting at byte:  " + i + " from the file.");
 			
 			// This for-loop splits the fileString into segments of the given payloadSize.  As long as i is less than the length of
 			// 	the fileString - the payloadSize, it is not the final packet of the transmission.
@@ -91,6 +93,7 @@ public class client
 			for(int j = 0; j <= windowSize; j++)
 			{
 				packet payLoad = new packet(1,j,fileSubString[j].length(),fileSubString[j]);
+				eachPackLen[j] = fileSubString[j].length();
 				// Serialize packet
 				ByteArrayOutputStream baStream = new ByteArrayOutputStream();
 				ObjectOutputStream ooStream = new ObjectOutputStream(baStream);
@@ -104,6 +107,7 @@ public class client
 				// global timer should start here with a loop looking for the ack after the for loop
 			}
 
+			// This is the GBN protocol *currently in progress*.
 			for(int j = 0; j <= windowSize; j++)
 			{
 				byte[] ackFromServer = new byte[1024];
@@ -117,17 +121,36 @@ public class client
 				{
 					packet ackP = (packet) ois.readObject();
 					ois.close();
+					System.out.println("Expected Sequence #:  " + exAckNum + " -- Received Sequence #:  " + ackP.getSeqNum());
 					if(exAckNum == ackP.getSeqNum())
 					{
 						//reset timer for next packet
 						exAckNum++;
 					}
-					else
+					// if the expected ack is less than ackP.getSeqNum() then the server got the exAckNum packet but the
+					// ack from the server was dropped, there's no need to resend data in this case.
+					else if(exAckNum < ackP.getSeqNum())
 					{
-						System.out.println("Unexpected ack from server.");
-						// resets i to start at the beginning of the missing packet *I think*.
-						i = i - (payloadSize * (8 - ackP.getSeqNum()));
-						// breaks out of the for-loop
+						System.out.println("Accepting Ack from server as cumulative.");
+						exAckNum = ackP.getSeqNum() + 1;
+					}
+					// if the exAckNum is greater than ackP.getSeqNum(), the exAckNum packet was dropped on the way to the
+					// server, resend all data starting with exAckNum.
+					else if(exAckNum > ackP.getSeqNum())
+					{
+						System.out.println("Packet was dropped going to server, resending data.");
+						for(int k = exAckNum; k <= windowSize; k++)
+						{
+							System.out.println("Subtracting: " + eachPackLen[k] + " From:  " + i);
+							i = i - eachPackLen[k];
+							System.out.println("New i:  " + i);
+						}
+						if(endOfFile)
+						{
+							// if a packet drop occurred, the data needs to be resent.
+							endOfFile = false;
+						}		
+						// breaks out of the for-loop, there's no need to check further for more drops.
 						j = windowSize + 1;
 					}
 				} catch(ClassNotFoundException e)
@@ -158,3 +181,4 @@ public class client
 		fromServer.close();
 	}//end main
 }//end client
+

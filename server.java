@@ -42,52 +42,47 @@ public class server
 				// if the packet is a data packet
 				if(packet.getType() == 1)
 				{
-					//System.out.println("Received Data Packet.");
+					//System.out.println("Received packet, testing.");
 					// % 8 means the client doens't have to reset the seq #s every time.
-					if((exSeqNum % 8) != packet.getSeqNum())
+					if((exSeqNum % 8) == packet.getSeqNum())
 					{
-						// drop the packet and send the previous seqNum as an ack
-						System.out.println("Packet did not contain the expected sequence #.");
-						packet nack = new packet(0,(packet.getSeqNum()), 0, null);
-						// copied from client.java
-						ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
-						ObjectOutputStream ooStream = new ObjectOutputStream(baoStream);
-						ooStream.writeObject(nack);
-						ooStream.flush();
-						outgoingData = baoStream.toByteArray();
-						//System.out.println("Sending:  ");
-						//nack.printContents();
-						DatagramPacket sendNack = new DatagramPacket(outgoingData, outgoingData.length, emulatorName, sendToEmulator);
-						toClient.send(sendNack);
-						// so that any remaining packets in the window from the client will be dropped too.
-						// the next packet seqNum from the client should be 0 because a new window started.
-						exSeqNum = 0;
-					}
-					// if it is the expected seq num, increment seqnum, send ack, add data to file
-					else
-					{
-						System.out.println("Packet contained the expected sequence #, sending ack.");
+						// If the packet contained the expected seq #, send ack to server, inc exSeqNum
 						received = new String(packet.getData());
-						packet.printContents();
 						// send ack
-						packet ack = new packet(0,(packet.getSeqNum() % 8),0,null);
+						//packet.printContents();
+						packet ack = new packet(0,(packet.getSeqNum()),0,null);
 						ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
 						ObjectOutputStream ooStream = new ObjectOutputStream(baoStream);
 						ooStream.writeObject(ack);
 						ooStream.flush();
 						outgoingData = baoStream.toByteArray();
-						//System.out.println("Sending:  ");
-						//ack.printContents();
 						DatagramPacket sendAck = new DatagramPacket(outgoingData, outgoingData.length, emulatorName, sendToEmulator);
 						toClient.send(sendAck);
 						// Write data received to the file.
 						file.format("%s", received);
 						exSeqNum++;
 					}
+					else // if the exSeqNum != packet.getSeqNum()
+					{
+						int ackNum = 0;
+						// fixes the issue where -1 was being sent as an ack #.
+						if(exSeqNum == 0){ackNum = 0;}
+						else{ackNum = (exSeqNum % 8) - 1;}
+						packet ack = new packet(0,ackNum,0,null);
+						ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
+						ObjectOutputStream ooStream = new ObjectOutputStream(baoStream);
+						ooStream.writeObject(ack);
+						ooStream.flush();
+						outgoingData = baoStream.toByteArray();
+						DatagramPacket sendAck = new DatagramPacket(outgoingData, outgoingData.length, emulatorName, sendToEmulator);
+						toClient.send(sendAck);
+						exSeqNum = 0;
+					}
 				}
 				// packet is an EOT from the client
 				else if(packet.getType() == 3)
 				{
+					System.out.println("Eot received, closing file and connections.");
 					eot = true;
 					file.close();		// Close output file.
 					fromClient.close();	// Close UDP socket.
@@ -101,6 +96,7 @@ public class server
 			{
 				e.printStackTrace();
 			}
-		}
+		}//end while
 	}//end main
 }//end server
+
