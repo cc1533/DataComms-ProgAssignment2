@@ -4,12 +4,12 @@ TODO:
 2. DONE -- cc1533 -- Implement window size correctly in client.java, currently just a static window for testing but it needs to be a dynamically changing window.  
 3. DONE -- cc1533 -- Make server.java send acks and its other requirements by checking the packet type for new packets.  
   * I'm thinking this can be done easily enough with some if-else statements that check the packet.getType().  
-4. Add ack support for client.java so it knows what server.java received or didn't receive.  
+4. DONE -- cc1533 -- Add ack support for client.java so it knows what server.java received or didn't receive.  
   * Resending packets can be added later.
 5. Add a global timer to client.java that keeps track of the last unacked packet sent to server.java.  
 6. DONE -- cc1533 -- Add a way for server.java to tell if it got a packet out of sequence order and drop it if it was wrong.  
-7. Implement go-back-n protocol (oh boy...).  
-8. Make sure program correctly handles missing packets.  
+7. IN PROGRESS -- Implement go-back-n protocol (oh boy...).  
+8. IN PROGRESS -- Make sure program correctly handles missing packets.  
 9. Add all the required .log files to client.java and server.java, shouldn't be too difficult.  
 10. Hopefully the program is done by this point...  
 
