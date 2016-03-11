@@ -74,6 +74,12 @@ Goals:
 
 3/10/2016  
 Chris:  
+
+Joe:
+1. I edited the code to create the log files for the sequence number, acks, and arrival. However, I believe that the arrival and the ack log files are not implemented correctly. I'm going to try to fix those issues tomorrow and work on the timer portion if I get a chance.
+
+2. Oh and you might have to change the path where you save the log files in your code (lines 58 and 75 in the client and line 29 for the server).
+
 Goals:
   1. Finish GBN.  
   2. Timers?
