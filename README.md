@@ -74,8 +74,9 @@ Goals:
 
 3/10/2016  
 Chris:  
+1. Worked extensively on both client.java and server.java. It will almost always terminate and save the output file. GBN is still not fully functional but I have an idea of what the problem could be. If I can figure out how to solve that problem, then it should be totally done.  
 
-Joe:
+Joe:  
 1. I edited the code to create the log files for the sequence number, acks, and arrival. However, I believe that the arrival and the ack log files are not implemented correctly. I'm going to try to fix those issues tomorrow and work on the timer portion if I get a chance.
 
 2. Oh and you might have to change the path where you save the log files in your code (lines 58 and 75 in the client and line 29 for the server).
@@ -88,6 +89,10 @@ Goals:
 3/11/2016  
 Chris:  
 Goals:
+  1. Finish GBN.
+  2. Make the client terminate from the EOT ack sent from the server.
+  3. Get Log files working.
+  4. Get timer working.  
   * Hopefully done. I'm going to Florida for Spring Break from Sat. - Mon. so I won't be able to work any.  
 
 3/12/2016  
