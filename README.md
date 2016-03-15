@@ -103,5 +103,6 @@ Chris:
 
 3/14/2016  
 Chris:  
+1. Got home at about 11:00PM from FL. Had to scamble to get the client working to where it exits via an EOT ack from the server. Couldn't work on it any more. Had to turn it in as it is.  
 Goals:
   * Fix any remaining issues and turn in.  
