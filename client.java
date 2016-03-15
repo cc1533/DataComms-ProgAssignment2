@@ -10,7 +10,7 @@
 *	5) DONE -- Send file by packets class.
 *	6) DONE -- Get the window working.
 *	7) Set up timer for last packet with no ack.
-*	8) Set up seqNum logs and Ack logs for client.
+*	8) DONE -- Set up seqNum logs and Ack logs for client.
 *	9) If there's time, clean everything up and try to use methods instead of having everything in main.
 *
 ************************************************************************************************************************************************/
@@ -49,7 +49,7 @@ public class client
 		DatagramSocket fromServer = new DatagramSocket(receiveFromEmulator);
 
 		/* * * * * Log Files * * * * */
-		/*// Sequence number log file
+		// Sequence number log file
 		Logger seqNumLog = Logger.getLogger("seqnum");
 		FileHandler fhSeq;
 		try 
@@ -100,6 +100,7 @@ public class client
 		// Change this to work for final ack instead of endOfFile.
 		while(!endOfFile)
 		{
+			boolean eot = false;
 			int[] eachPackLen = new int[8];
 			//exAckNum = 0;	// reset exAckNum every new window.
 			//boolean ack = false;
@@ -126,6 +127,7 @@ public class client
 				{
 					fileSubString[j] = fileString.substring(i, fileString.length());
 					endOfFile = true;
+					eot = true;
 				}
 				// if the current packet is the end of file packet, all packets after this one don't contain any information.
 				if(endOfFile)
@@ -176,14 +178,14 @@ public class client
 				{
 					packet ackP = (packet) ois.readObject();
 					ois.close();
-					/*//if (ackP.getLength() != 0)
+					//if (ackP.getLength() != 0)
 					//{
 						// Update SeqNum log file
 						seqNumLog.info(Integer.toString(ackP.getSeqNum()%8));
 						// Update Ack log file
 						ackLog.info(Integer.toString(ackP.getSeqNum()%8));
-					//}*/
-					System.out.println("Expected Sequence #:  " + j + " -- Received Sequence #:  " + ackP.getSeqNum());
+					//}
+					//System.out.println("Expected Sequence #:  " + j + " -- Received Sequence #:  " + ackP.getSeqNum());
 					if(j == ackP.getSeqNum())
 					{
 						//reset timer for next packet
@@ -211,6 +213,7 @@ public class client
 						{
 							// if a packet drop occurred, the data needs to be resent.
 							endOfFile = false;
+							eot = false;
 						}		
 						// breaks out of the for-loop, there's no need to check further for more drops.
 						j = windowSize;
@@ -221,10 +224,9 @@ public class client
 				}
 			}
 			// If the endOfFile packet is sent, create and send the EOT packet
-			if(endOfFile)
+			while(eot)
 			{
 				// This will basically be its own mini sender and receiver that uses a while-loop to wait for ack.
-				//String endOfFileS = "XEOF";
 				packet eofpayLoad = new packet(3,0,0,null);
 				ByteArrayOutputStream eofStream = new ByteArrayOutputStream();
 				ObjectOutputStream ooeofStream = new ObjectOutputStream(eofStream);
@@ -233,10 +235,29 @@ public class client
 				byte[] eofSig = eofStream.toByteArray();
 				DatagramPacket sendEOF = new DatagramPacket(eofSig, eofSig.length, emulatorName, sendToEmulator);
 				toServer.send(sendEOF);
-				//ackLog.info(Integer.toString(sendEOF.getSeqNum()%8));
 				// Start timer and look for ack of EOT packet from server
-
-			}
+				byte[] eotFromServer = new byte[1024];
+				DatagramPacket recEOT = new DatagramPacket(eotFromServer, eotFromServer.length);
+				fromServer.receive(recEOT);
+				byte[] ackD = recEOT.getData();
+				ByteArrayInputStream bais = new ByteArrayInputStream(ackD);
+				ObjectInputStream ois = new ObjectInputStream(bais);
+				try
+				{
+					packet ackP = (packet) ois.readObject();
+					ois.close();
+					if(ackP.getType() == 0)
+					{
+						eot = false;	// while not technically correct, it is the only way I thought to break out
+								// of the loop.
+						//toServer.close();
+						//fromServer.close();
+					}
+				} catch(ClassNotFoundException e)
+				{
+					e.printStackTrace();
+				}
+			}//end eot
 		}//end while
 		toServer.close();	// Connections terminated.
 		fromServer.close();

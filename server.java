@@ -19,7 +19,7 @@ public class server
 		//int packSize = 37;
 		boolean eot = false;
 
-		/*// Arrival Log file
+		// Arrival Log file
         	Logger arrivalLog = Logger.getLogger("arrival");
         	FileHandler fhArrival;
         	try
@@ -37,7 +37,7 @@ public class server
 		catch (IOException e) 
 		{
             		e.printStackTrace();
-        	}*/
+        	}
 		
 		// Creating UDP connection with Emulator.
 		DatagramSocket fromClient = new DatagramSocket(receiveFromEmulator);
@@ -69,14 +69,14 @@ public class server
 				// if the packet is a data packet
 				if(packet.getType() == 1)
 				{
-					System.out.println("Expected Seq #: " + (exSeqNum % 8) + " -- Received Seq #:  " + packet.getSeqNum());
+					//System.out.println("Expected Seq #: " + (exSeqNum % 8) + " -- Received Seq #:  " + packet.getSeqNum());
 					// % 8 means the client doens't have to reset the seq #s every time.
 					if((exSeqNum % 8) == packet.getSeqNum())
 					{
 						//if (packet.getLength() != 0)
                         			//{
                             				// Update Arrival log file
-                            				//arrivalLog.info(Integer.toString(packet.getSeqNum()%8));
+                            				arrivalLog.info(Integer.toString(packet.getSeqNum()%8));
                         			//}
 						// If the packet contained the expected seq #, send ack to server, inc exSeqNum
 						received = new String(packet.getData());
@@ -110,9 +110,6 @@ public class server
 					else // if the exSeqNum != packet.getSeqNum()
 					{
 						int ackNum = 0;
-						// fixes the issue where -1 was being sent as an ack #.
-						/*if(exSeqNum == 0){ackNum = 0;}
-						else{ackNum = (exSeqNum % 8) - 1;}*/
 						ackNum = (exSeqNum % 8) - 1;
 						packet ack = new packet(0,ackNum,0,null);
 						ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
@@ -134,7 +131,15 @@ public class server
 				// packet is an EOT from the client
 				else if(packet.getType() == 3)
 				{
-					System.out.println("Eot received, closing file and connections.");
+					//System.out.println("Eot received, closing file and connections.");
+					packet ack = new packet(0,0,0,null);
+					ByteArrayOutputStream baoStream = new ByteArrayOutputStream();
+					ObjectOutputStream ooStream = new ObjectOutputStream(baoStream);
+					ooStream.writeObject(ack);
+					ooStream.flush();
+					outgoingData = baoStream.toByteArray();
+					DatagramPacket sendAck = new DatagramPacket(outgoingData, outgoingData.length, emulatorName, sendToEmulator);
+					toClient.send(sendAck);
 					eot = true;
 					file.close();		// Close output file.
 					fromClient.close();	// Close UDP socket.
